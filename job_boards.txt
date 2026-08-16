@@ -1,0 +1,25 @@
+# Job Hunter — Company Job Boards
+# One URL per line. Blank lines and lines starting with # are ignored.
+# Optionally add a company label after the URL separated by a space.
+#
+# Supported board types (auto-detected from URL):
+#   greenhouse.io  → fast JSON API, no browser needed
+#   lever.co       → fast JSON API, no browser needed
+#   ashby.com      → fast JSON API, no browser needed
+#   remoteok.com   → fast JSON API, no browser needed
+#   workday.com    → Playwright browser scraping
+#   other          → Playwright browser scraping (best-effort)
+#
+# A few dedicated adapters also exist for specific company career-site
+# platforms (see scraper/aiib.py, scraper/mercedes_benz.py, scraper/
+# tupu360.py, scraper/de_talents.py, scraper/gemini_global.py) — these
+# match by hostname automatically if you add that company's board URL.
+# They're included as worked examples of how to write a dedicated adapter
+# for a company whose career site needs one (see scraper/generic.py for
+# the fallback Playwright-based scraper any other board uses).
+#
+# Replace the examples below with your own target companies:
+
+https://job-boards.greenhouse.io/anthropic Anthropic
+https://jobs.lever.co/openai OpenAI
+https://jobs.ashby.com/mistral Mistral

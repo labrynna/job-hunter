@@ -1,0 +1,15 @@
+# Job Hunter — Settings
+# All paths are relative to this file's directory.
+
+master_cv_path: "master_cv.docx"   # place your own CV here (see SETUP.md)
+output_dir: "output/cvs"
+database_path: "data/jobs.db"      # auto-created on first run
+
+score_threshold: 70                # minimum ATS score (0-100) to generate a tailored CV
+pre_score_threshold: 50            # minimum title/domain pre-score (0-100) to fetch the full JD
+tfidf_prefilter_threshold: 0.15
+duplicate_window_days: 60          # same company+title within this window = same vacancy, even under a new URL
+
+max_posting_age_days: 14           # postings older than this are deprioritized (skipped, no scoring cost)
+recency_exempt_location: "YourCity"   # postings here are never deprioritized by age, regardless of max_posting_age_days
+                                       # — set this to your home base, e.g. wherever most of your target roles are

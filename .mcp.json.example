@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "job-hunter": {
+      "command": "python",
+      "args": ["<absolute-path-to-your-clone>/mcp_server.py"],
+      "type": "stdio"
+    }
+  }
+}

@@ -1,0 +1,169 @@
+# Job Hunter — Career-Fit Filter Criteria
+#
+# Read via get_scoring_criteria() and applied during BOTH pre-scoring
+# (title-only) and full ATS scoring (full JD). These are location-based
+# seniority gates layered on top of the normal 5-dimension ATS scoring model
+# — a role can score well on skills/experience fit but should still be
+# down-weighted or excluded if it fails the location/seniority rule below.
+#
+# Everything in this file is a WORKED EXAMPLE for a fictional candidate and
+# a fictional target employer ("Acme Infrastructure Bank") — replace the
+# specifics with your own home city, career background, and target
+# companies. The structure (location_rules / remote_work_criteria /
+# employer_exemptions / cover_letter_guidance / pre_score_policy) is the
+# reusable part; none of the example values are meant to be used as-is.
+
+location_rules:
+  home_city:
+    match: "location contains 'YourCity' (case-insensitive) — replace with your own home base"
+    seniority_requirement: >
+      Flexible — career-path fit can be applied loosely. Any non-junior role
+      is acceptable (i.e. exclude only clear internship/student/entry-level
+      individual-contributor postings). Domain match to the master CV is a
+      bonus, not a hard requirement, given proximity/logistics matter less
+      when you're already based there.
+
+  elsewhere_onsite:
+    match: "on-site location that does NOT contain your home city"
+    seniority_requirement: >
+      Strict — must be a senior role that genuinely fits your career path
+      (adjust the specific titles/functions below to your own trajectory,
+      e.g. Director/GM/Head/VP-level, or Senior Manager+ in your core
+      domain). Mid-level, individual-contributor, or off-domain roles should
+      score low regardless of company prestige — relocating/commuting
+      elsewhere is only worth it for a role that's a clear step up.
+
+  remote_or_unspecified:
+    match: "location is null/unspecified — no on-site location stated, but not confirmed as a genuine remote-eligible posting either"
+    seniority_requirement: >
+      Apply the same flexible standard as your home city (non-junior is
+      enough) — unspecified-location roles don't carry the same
+      location-commitment cost as an on-site posting elsewhere.
+
+# Genuinely remote, work-from-anywhere postings (e.g. from a dedicated
+# remote-job board) are evaluated on a DIFFERENT axis entirely — do not
+# apply the location_rules seniority/career-path bar to these.
+remote_work_criteria:
+  applies_to: "roles explicitly marked/confirmed as remote, work-from-anywhere, or distributed"
+  evaluation_basis: >
+    Career-path advancement and seniority match do NOT matter for these —
+    score instead on: (1) confirmed or highly likely eligible for
+    your-country-based remote work (no citizenship/timezone restriction that
+    would exclude you), (2) compensation — genuinely good pay for the role
+    type, not gig-economy/micro-task rates, (3) general interest/quality of
+    the role, (4) at least some genuine overlap with your actual
+    skills/experience — it does not need to be a senior or advancing role,
+    just a reasonably good match to what you can actually do.
+  exclude: >
+    Gig-economy call-center/customer-support contractor platforms (per-call
+    or per-minute pay, typically residency-restricted), micro-task/
+    crowdsourcing platforms (data labeling, surveys, pennies-per-task), and
+    rewards/cashback sites that aren't real employment at all.
+
+# Roles posted more than this many days ago are deprioritized (pre_score
+# forced to 0 mechanically, no LLM judgment spent) UNLESS they're in your
+# home city, which is cheap to revisit and apply to regardless of age.
+posting_recency:
+  max_age_days: 14
+  exempt_location: "YourCity"
+  note: >
+    Enforced mechanically by filter_stale_listings() using each role's
+    posted_at field — no LLM judgment needed. Roles with no known posted_at
+    (most generic-scraped boards don't expose a reliable date) are left
+    untouched since their age can't be judged.
+
+# Standing per-employer overrides. Applied during pre-scoring BEFORE the
+# normal title/domain-fit judgment — a matched employer bypasses the
+# pre-score gate regardless of title/domain fit, so its roles always reach
+# full JD fetch + full ATS scoring. Full ATS scoring still applies normally
+# on top of this (missing_skills, score, and the score_threshold gate for
+# CV-tailoring are untouched) — this only controls whether a role reaches
+# full scoring in the first place.
+#
+# Use this for a handful of genuine top-priority target employers where you
+# have real insider knowledge (from a contact, an informational interview,
+# research into their hiring bar) worth encoding — not for every employer
+# on your board list.
+employer_exemptions:
+  acme_infrastructure_bank:   # EXAMPLE — replace with your own priority employer's key
+    match: "company contains 'Acme Infrastructure Bank' (case-insensitive) — this is a placeholder, not a real company"
+    rule: >
+      Example: this fictional employer is a #1 target regardless of
+      title/domain fit. Always pass its postings through the pre-score gate
+      to full JD fetch and full ATS scoring — do not gate one out for weak
+      domain fit alone. Only exclude a posting if it is clearly
+      entry-level/intern/student (the same bar as the location_rules
+      seniority floor above).
+
+    # Source: wherever you got real insider guidance — a call with a
+    # contact, research into how the employer actually hires. Apply it
+    # during full ATS scoring, not just pre-score.
+    seniority_band_guidance: >
+      Example: if you know this employer's job ladder (e.g. Associate →
+      Officer → Senior Officer → Principal → Director), and you know from
+      insider knowledge which band is your realistic sweet spot given your
+      experience — say so here explicitly, and instruct the scorer to score
+      that band's seniority dimension highest. Don't inflate seniority for
+      bands above your realistic entry point.
+
+    domain_transfer_guidance: >
+      Example: if this employer's core business is a genuinely different
+      domain from your background (the way this example bank's
+      infrastructure/project finance lending would differ from, say, retail
+      banking), a generic keyword-matching ATS would wrongly treat surface
+      keyword overlaps ("finance", "loan") as a strong match. Instead,
+      credit the genuinely TRANSFERABLE substance from your own background
+      explicitly (name your actual transferable skills here), and name the
+      genuinely narrow gaps explicitly in missing_skills — without letting
+      one narrow technical gap tank an otherwise strong seniority/leadership
+      match.
+
+    education_guidance: >
+      Example: if this employer's entry tier requires a Master's and you
+      only hold a Bachelor's, don't hard-zero the education dimension at
+      Officer+ level given substantial real-world experience — award
+      partial credit rather than full marks.
+
+    department_affinity: >
+      Example: if you know (from insider knowledge) which specific
+      departments are the best genuine fit for your background versus which
+      are poor fits requiring a specialist background you don't have, name
+      both explicitly here so the scorer applies a mild positive or negative
+      nudge accordingly.
+
+    score_threshold_override: 55
+    score_threshold_override_rationale: >
+      Example: given this is a genuine #1 priority employer, use a lower
+      CV-tailoring threshold than your normal score_threshold — worth
+      applying even to imperfect-fit roles as a way to get in the door,
+      meet people, and learn the organization for future openings.
+
+# Cover-letter guidance — applied whenever writing a tailored CV, alongside
+# the existing rule of never inventing skills/experience not in the master
+# CV.
+cover_letter_guidance:
+  general_principles:
+    - "State genuine motivation beyond compensation — for mission-driven organizations, explicitly connect to the impact/mission angle, not just career logic."
+    - "Explicitly bridge transferable experience — don't assume the reader connects the dots between your actual background and what the role needs; spell out the transfer logic in one or two sentences."
+    - "If you are genuinely long-term rooted in the application's location, state that explicitly and early — many employers with international postings have real retention problems with staff who leave after a few years, and genuine local commitment is a real, checkable differentiator."
+    - "Show genuine engagement with the specific employer's own public material (an annual report, a strategy document, a named initiative) where practical — a specific, accurate reference signals real interest over a generic application. Do not fabricate familiarity with a document you haven't actually referenced."
+    - "Always produce the CV and cover letter as two separate documents — never combine them into one file, even when a portal has no separate cover-letter upload field. If the portal only accepts one upload, attach the CV there and use whatever secondary attachment slot exists for the cover letter, or flag it for manual handling — don't solve a single-upload-field portal by merging the documents."
+
+  # Example of an employer-specific addendum to the general principles above
+  # — replace or remove.
+  acme_infrastructure_bank_specific:
+    - "Example: if you've learned this employer's HR uses an AI first-pass screening tool, make sure specific technical terms named in the JD that you genuinely have grounding in appear explicitly in the document, since a generic non-tailored submission may get filtered out automatically."
+
+# Cost-control rule: even for boards that hand us the full JD for free
+# (Greenhouse/Lever/Ashby/etc.), pre-score on the TITLE ONLY first — do not
+# let full-JD reasoning skip straight to full ATS scoring. Only promote to
+# full scoring after pre-score clears threshold.
+pre_score_policy:
+  title_only: true
+  applies_to_full_jd_boards: true
+  rationale: >
+    Full ATS scoring (5-dimension reasoning against the complete JD) is the
+    expensive step token-wise. The pre-score gate exists specifically to
+    avoid spending that reasoning on obviously irrelevant postings — this
+    must hold even when the JD was free to fetch, since the JD was never
+    the expensive part, the scoring reasoning is.

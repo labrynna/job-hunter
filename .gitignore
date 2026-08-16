@@ -1,0 +1,21 @@
+# Personal data — never commit
+master_cv.docx
+data/*.db
+data/*.db-*
+output/cvs/*
+reports/*.md
+
+# Local machine-specific config
+.mcp.json
+.claude/settings.local.json
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Keep the folder structure in git even though contents are ignored
+!data/.gitkeep
+!output/cvs/.gitkeep
+!reports/.gitkeep
